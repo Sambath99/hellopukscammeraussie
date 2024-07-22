@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.0/dist/jsQR.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #fff;
+    }
+
+    .header {
+      background-color: #000;
+      padding: 10px 0;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: #fff;
+      font-size: 24px;
+    }
+
+    .logo img {
+      margin-right: 10px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: calc(100vh - 50px);
+    }
+
+    .main-content h1 {
+      margin-bottom: 20px;
+    }
+
+    .upload-frame {
+      width: 300px;
+      height: 200px;
+      border: 2px dashed #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .upload-frame input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header" data-header="">
+    <div class="container">
+      <a href="#" class="logo">
+        <img src="https://codewithsadee.github.io/cryptex/assets/images/logo.svg" width="32" height="32" alt="Cryptex logo">
+        Cryptex
+      </a>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <h1>Paste QR Code Invite</h1>
+    <div class="upload-frame">
+      <input type="file" accept="image/*" id="file-input">
+      <i class="fas fa-upload upload-icon"></i>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('file-input').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code && code.data === "sazy855") {
+              alert('Nice! Redirecting...');
+              window.location.href = 'https://97b94c2f-09ef-491f-9d8e-91ebc2b0e052-00-18v3xnuyu8hbs.riker.replit.dev/create.html'; // Redirect to nice.html if QR code text matches
+            } else {
+              alert('Your invite QR code is not valid.'); // Handle invalid QR code text
+            }
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+
+</html>
